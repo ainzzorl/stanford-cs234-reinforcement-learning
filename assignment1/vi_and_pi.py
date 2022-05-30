@@ -118,7 +118,7 @@ def policy_improvement(P, nS, nA, value_from_policy, policy, gamma=0.9):
 			for prob, next_state, reward, done in P[s][a]:
 				action_value += prob * reward
 				if not done:
-					action_value += gamma * value_from_policy[next_state]
+					action_value += prob * gamma * value_from_policy[next_state]
 			if action_value > best_action_value:
 				best_action = a
 				best_action_value = action_value
@@ -193,6 +193,43 @@ def value_iteration(P, nS, nA, gamma=0.9, tol=1e-3):
 	############################
 	# YOUR IMPLEMENTATION HERE #
 
+	step = 0
+	while True:
+		step += 1
+		# print(f'Value iteration step: {step}')
+		new_value_function = np.zeros(nS)
+		for s in range(nS):
+			best_action_value = -np.inf
+			for a in range(nA):
+				action_value = 0
+				for prob, next_state, reward, done in P[s][a]:
+					action_value += prob * reward
+					if not done:
+						action_value += prob * gamma * value_function[next_state]
+				if action_value > best_action_value:
+					best_action_value = action_value
+			new_value_function[s] = best_action_value
+		should_stop = np.all(np.fabs(value_function - new_value_function) < tol)
+		value_function = new_value_function
+		if should_stop:
+			break
+
+	for s in range(nS):
+		best_action_value = -np.inf
+		for a in range(nA):
+			action_value = 0
+			for prob, next_state, reward, done in P[s][a]:
+				action_value += prob * reward
+				if not done:
+					action_value += prob * gamma * value_function[next_state]
+			if action_value > best_action_value:
+				best_action_value = action_value
+				policy[s] = a
+
+	print('Value iteration steps:', step)
+	print('Final value function:', value_function)
+	print('Final policy:', policy)
+
 	############################
 	return value_function, policy
 
@@ -242,9 +279,9 @@ if __name__ == "__main__":
 	V_pi, p_pi = policy_iteration(env.P, env.nS, env.nA, gamma=0.9, tol=1e-3)
 	render_single(env, p_pi, 100)
 
-	# print("\n" + "-"*25 + "\nBeginning Value Iteration\n" + "-"*25)
+	print("\n" + "-"*25 + "\nBeginning Value Iteration\n" + "-"*25)
 
-	# V_vi, p_vi = value_iteration(env.P, env.nS, env.nA, gamma=0.9, tol=1e-3)
-	# render_single(env, p_vi, 100)
+	V_vi, p_vi = value_iteration(env.P, env.nS, env.nA, gamma=0.9, tol=1e-3)
+	render_single(env, p_vi, 100)
 
 
