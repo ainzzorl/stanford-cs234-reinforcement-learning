@@ -1,0 +1,15 @@
+name: cs234-torch
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - torchvision
+  - torchaudio
+  - pytorch
+  - matplotlib
+  - gym
+  - tensorboard
+  - pyglet
+prefix: /Users/ainzzorl/opt/miniconda3/envs/cs234-torch
